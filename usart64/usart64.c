@@ -3,11 +3,19 @@
 #include "usart64.h"
 
 void usart0_init(uint16_t ubrr_value){
+	/*
+	 * Set USART Baud Rate Register value with the currect
+	 * baud rate settings. It is calculated with the following
+	 * equation(Asynchronious normal mode - U2Xn = 0):
+	 * UBRR = (F_CPU / (16 * BAUD)) - 1
+	 */
 	UBRR0H = (ubrr_value >> 8);
 	UBRR0L = ubrr_value;
 
+	/* Transmit and receive enable */
 	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
 	
+	/* 8N1 configuration of data frame */
 	UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);
 }
 
