@@ -6,12 +6,14 @@
 #include "../usart64/usart64.h"
 #include "gsm.h"
 
+int USART;
+
 /* initialize gsm with correct baud rate settings */
 void gsm_init(int usart){
-	if(usart == 0){
+	if(usart == USART0){
 		USART = 0;
 	}
-	else if(usart == 1){
+	else if(usart == USART1){
 		USART = 1;
 	}
 
@@ -21,6 +23,12 @@ void gsm_init(int usart){
 	else{
 		usart1_init(MYUBRR);
 	}
+
+	/*Make PWKEY HIGH for 2 seconds to power on the gsm module */ 
+	GSM_PWON_DDR |= (1 << GSM_PWON_PIN);
+	GSM_PWON_PORT |= (1 << GSM_PWON_PIN);
+	_delay_ms(2000);
+	GSM_PWON_PORT &= ~(1 << GSM_PWON_PIN);
 }
 
 /* Send an AT command to GSM */
@@ -146,5 +154,5 @@ int gsm_wait_for_new_msg(){
 		return atoi(++msgnum);
 	}
 
-	return 0;
+	return NO_NEW_MSG;
 }
